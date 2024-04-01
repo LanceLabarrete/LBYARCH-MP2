@@ -5,8 +5,8 @@ brief description
 - Amelia Joyce Abenoja
 - Lance Desmond Labarrete
 
-## Analysis
-### Comparative Execution Time
+## Analysis Results
+### Comparative Execution Time 
 start here...
 
 ### Performance of the Kernels
