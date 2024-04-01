@@ -32,6 +32,10 @@ extern float saxpyASM(float scalarA, float x, float y);
 /***** Main Program *****/
 int main(int argc, char* argv[]) {
 	srand((unsigned int)time(NULL));
+	
+	/* Uncomment for choosing modes */
+	//char mode = 'R';		// For Release Mode
+	char mode = 'D';		// For Debug Mode
 
 	// Time measurement for C
 	clock_t startC, endC;
@@ -53,9 +57,10 @@ int main(int argc, char* argv[]) {
 	//float max = (float)3.402823466e+38;			// Largest
 	float max = 100.0f;
 
-	// Vector sizes = 2^20, 2^24, 2^30
-	//int n[3] = {1048576, 16777216, 1073741824};
-	int vectorN = 1048576;
+	// Vector sizes
+	int vectorN = 1048576;					// 2^20 - Passed
+	//int vectorN = 16777216;					// 2^24 - Passed
+	//int vectorN = 134217728;					// 2^27 - Passed
 
 	// Scalar value
 	float scalarA = 0.0f;
@@ -63,7 +68,8 @@ int main(int argc, char* argv[]) {
 	// Vector values
 	float* x = (float*)malloc(vectorN * sizeof(float));
 	float* y = (float*)malloc(vectorN * sizeof(float));
-	float* z = (float*)malloc(vectorN * sizeof(float));			// C Z vector	
+	float* z = (float*)malloc(vectorN * sizeof(float));			// C Z vector
+	float* checkZ = (float*)malloc(vectorN * sizeof(float));	// Temporary Z vector for correctness check
 	float* asmZ = (float*)malloc(vectorN * sizeof(float));		// Assembly Z vector
 
 	// Temp variables
@@ -71,23 +77,32 @@ int main(int argc, char* argv[]) {
 	float tempY = 0.0f;
 	float tempZ = 0.0f;
 
+	// Check for correctness
+	int isCorrectC = 1;
+	int isCorrectASM = 1;
+
 
 	if (x == NULL || y == NULL || z == NULL || asmZ == NULL) {
 		printf("Memory allocation failed.\n");
 		exit(0);
 	} else {
+
+		scalarA = random_float_generator(min, max);		// Set a random float number for the scalar value from min to max
+
+		for (int i = 0; i < vectorN; i++) {				// Set a random float number for the X and Y vectors from min to max
+			x[i] = random_float_generator(min, max);
+			y[i] = random_float_generator(min, max);
+		}
 		
 		// Main loop
 		for (int i = 0; i < ITERATIONS; i++) {				// Loop for the number of iterations
+			
+			//printf("\nIteration: %d\n", i + 1);
 
-			printf("\nIteration: %d\n", i + 1);
-			scalarA = random_float_generator(min, max);		// Set a random float number for the scalar value from min to max
-
-			for (int i = 0; i < vectorN; i++) {				// Set a random float number for the X and Y vectors from min to max
-				x[i] = random_float_generator(min, max);
-				y[i] = random_float_generator(min, max);
+			/**** Store the 1st Iteration Result for Correctness *****/
+			if (i == 0) {
+				saxpyC(vectorN, scalarA, x, y, checkZ);	// Call the C function for the 1st iteration
 			}
-
 
 			/***** For Assembly *****/
 			startASM = clock();							// Start time measurement for Assembly function
@@ -102,27 +117,80 @@ int main(int argc, char* argv[]) {
 
 
 			/***** For C *****/
-			startC = clock();					// Start time measurement for C function
-			saxpyC(vectorN, scalarA, x, y, z);	// Call the C function
-			endC = clock();						// End time measurement for C function
+			startC = clock();						// Start time measurement for C function
+			saxpyC(vectorN, scalarA, x, y, z);		// Call the C function
+			endC = clock();							// End time measurement for C function
 
 			// Calculate the time
 			currTimeC = ((double)(endC - startC)) / CLOCKS_PER_SEC;
 
-			/***** Display Comparison *****/
-			displayTableHeader();
-			displayTableBody(z, asmZ);
-			displayTableFooter();
+			/***** Check the correctness of the C function on each iteration *****/
+			isCorrectC = checkCorrectness(vectorN, z, checkZ);
+			isCorrectASM = checkCorrectness(vectorN, asmZ, checkZ);
 
+			// Check the correctness
+			if (isCorrectC == 1) {
+				break;
+			}
+			else {
+				if (isCorrectASM == 1) {
+					break;
+				}
+			}
+
+			
 			// Store the time measurement
 			timeC[i] = currTimeC;
 			timeASM[i] = currTimeASM;
 		}
 
+		// Display Vector Table
+		printf("\n");
+		printf("Vector Table Results\n");
+		displayTableHeader();
+		displayTableBody(checkZ, z, asmZ);
+		displayTableFooter();
+
+		printf("\n");
+
+		// Display the mode
+		printf("Set Up\n");
+		if (mode == 'R') {
+			printf("Mode\t\t\t: Release\n");
+		} else if (mode == 'D') {
+			printf("Mode\t\t\t: Debug\n");
+		}
 
 		// Display the n size
-		printf("\nVector Size\t\t: %d\n", vectorN);
+		printf("Vector Size\t\t: %d\n", vectorN);
+
+		// Display the scalar value
 		printf("Scalar Value\t\t: %f\n", scalarA);
+
+		printf("\n");
+
+		// Display Correctness
+		printf("Correctness Result\n");
+		// Diplay the correctness of the C function status
+		if (isCorrectC == 0) {
+			printf("Correctness Check in C\t\t: PASSED\n");
+		}
+		else {
+			printf("Correctness Check in C\t\t: FAILED\n");
+		}
+
+		// Diplay the correctness of the Assembly function status
+		if (isCorrectASM == 0) {
+			printf("Correctness Check in Assembly\t: PASSED\n");
+		}
+		else {
+			printf("Correctness Check in Assembly\t: FAILED\n");
+		}
+
+		printf("\n");
+
+		// Display the time measurement
+		printf("\nTime Measurement Results\n");
 
 		// Calculate the average time for the C function
 		computeAveTime(timeC, ITERATIONS, &totalTimeC, &averageTimeC, 'C');
@@ -131,6 +199,7 @@ int main(int argc, char* argv[]) {
 		computeAveTime(timeASM, ITERATIONS, &totalTimeASM, &averageTimeASM, 'A');
 		printf("\n");
 
+		
 		// Free the memory
 		free(x);
 		free(y);

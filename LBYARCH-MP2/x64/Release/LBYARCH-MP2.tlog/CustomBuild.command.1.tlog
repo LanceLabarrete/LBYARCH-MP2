@@ -1,2 +1,2 @@
 ^C:\USERS\AJ\ONEDRIVE\DESKTOP\PROGRAMMING\GIT\LBYARCH\LBYARCH-MP2\LBYARCH-MP2\ASMSAXPY.ASM
-C:\Program Files\NASM\nasm –f win64 asmsaxpy.asm
+C:\nasm\nasm -f win64 asmsaxpy.asm

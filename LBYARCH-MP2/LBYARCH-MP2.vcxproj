@@ -140,10 +140,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\nasm\nasm -f win64 asmsaxpy.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">asmsaxpy.obj</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\nasm\nasm -f win64 asmsaxpy.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">asmsaxpy.obj</Outputs>
     </CustomBuild>
