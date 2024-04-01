@@ -11,19 +11,19 @@
 #include <time.h>
 
 void displayTableHeader() {
-	printf("---------------------------------------------\n");
-	printf("%5s | %15s | %15s\n", "Index", "Vector Z (C)", "Vector Z (x86-64)");
-	printf("---------------------------------------------\n");
+	printf("--------------------------------------------------------------------\n");
+	printf("%5s | %20s | %15s | %15s\n", "Index", "Correctness Vector", "Vector Z (C)", "Vector Z (x86-64)");
+	printf("--------------------------------------------------------------------\n");
 }
 
-void displayTableBody(float* z, float* asmZ) {
+void displayTableBody(float* checkZ, float* z, float* asmZ) {
 	for (int i = 0; i < 10; i++) {
-		printf("%5.0d | %15.6f | %15.6f\n", i + 1, z[i], asmZ[i]);
+		printf("%5.0d | %20.6f | %15.6f | %15.6f\n", i + 1, checkZ[i], z[i], asmZ[i]);
 	}
 }
 
 void displayTableFooter() {
-	printf("=============================================\n");
+	printf("====================================================================\n");
 }
 
 
@@ -52,10 +52,20 @@ void computeAveTime(double* time, int iterations, double* totalTime, double* ave
 	// Display the average time
 	switch(mode) {
 		case 'C':
-			printf("Average time (for C)\t: %f\n", *averageTime);
+			printf("Average time (for C)\t: %f seconds\n", *averageTime);
 			break;
 		case 'A':
-			printf("Average time (for ASM)\t: %f\n", *averageTime);
+			printf("Average time (for ASM)\t: %f seconds\n", *averageTime);
 			break;
 	}
+}
+
+int checkCorrectness(int n, float* z, float* checkZ) {
+	for (int i = 0; i < n; i++) {
+		if (z[i] != checkZ[i]) {
+			printf("Error: C function is incorrect!\n");
+			return 1;
+		}
+	}
+	return 0;
 }

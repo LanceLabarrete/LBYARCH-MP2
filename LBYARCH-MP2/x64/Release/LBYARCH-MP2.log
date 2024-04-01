@@ -1,4 +1,7 @@
-﻿  Performing Custom Build Tools
-  'C:\Program' is not recognized as an internal or external command,
-  operable program or batch file.
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppCommon.targets(254,5): error MSB8066: Custom build for 'asmsaxpy.asm' exited with code 9009.
+﻿  main.c
+  Generating code
+  3 of 12 functions (25.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  LBYARCH-MP2.vcxproj -> C:\Users\AJ\OneDrive\Desktop\Programming\Git\LBYARCH\LBYARCH-MP2\x64\Release\LBYARCH-MP2.exe
